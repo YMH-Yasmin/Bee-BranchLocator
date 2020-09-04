@@ -1,14 +1,151 @@
-
-html, body {
+html,
+body {
   height: 100%;
+  font-size: 16px;
   font-family: Arial, Helvetica, sans-serif;
+  overflow: hidden;
+  background-color: black;
+  color: white;
 }
 
-.title {
-    display: flex;
-    justify-content: center;
+h1 {
+  color: yellow;
+  font-size: 45px;
+  margin-top: 7vh;
+}
+
+.main-div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+}
+
+.content-div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 3vh 0;
+  overflow-y: auto;
 }
 
 #map {
+  height: 70vh;
+  width: 50vw;
+  margin: 0 5vw;
+}
+
+.controls-div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 35vw;
+  min-width: 300px;
+  margin-bottom: 7vh;
+}
+
+.location-input-div {
+  display: flex;
+  margin: 10px 0;
+  height: 45px;
+
+}
+
+.location-input-div input {
+  width: 240px;
+  font-size: 16px;
+  padding-left: 10px;
+  border-radius: 8px 0 0 8px;
+  border: none;
+  outline: none;
+}
+
+.location-btn {
+  width: 45px;
+  border-radius: 0 8px 8px 0;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  background-color: yellow;
+}
+
+.controls-div button:not(.location-btn) {
+  width: 300px;
+  height: 45px;
+  margin: 10px 0;
+  border-radius: 8px;
+  font-size: 16px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  background-color: #555555;
+  color: white;
+  box-shadow: none;
+}
+
+.controls-div button:hover {
+  opacity: 0.7;
+}
+
+.controls-div button:active {
+  opacity: 0.3;
+}
+
+.search-radius-div {
+  width: 300px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.search-radius-div .dropdown-div {
+  width: 125px;
+  height: 45px;
+  margin: 15px 0;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  background-color: #555555;
+  color: white;
+  box-shadow: none;
+}
+
+.search-radius-div .dropdown-div p {
   height: 100%;
+  margin: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dropdown-items-ul {
+  display: none;
+  list-style-type: none;
+  padding: 0;
+}
+
+.show-dropdown {
+  margin: 0;
+  border-radius: 8px;
+  display: block;
+  position: relative;
+  z-index: 1;
+  background-color: #555555;
+  border: 2px solid black;
+}
+
+.dropdown-items-ul li {
+  padding: 5px 10px;
+}
+
+.dropdown-items-ul li:hover {
+  opacity: 0.7;
+  background-color: grey;
+}
+
+.search-radius-div p {
+  margin-left: 15px;
 }

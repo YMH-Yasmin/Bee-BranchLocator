@@ -6,25 +6,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+        integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
 
-    <script src="index.js"></script>
-
-    <script defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqhFUpKpcgwXzZZWMH6ggZFk4FlA5z2Pw&callback=initMap&libraries=&v=weekly"
-        ></script>
-
-    <!-- AIzaSyCqhFUpKpcgwXzZZWMH6ggZFk4FlA5z2Pw -->
-
-    <title>Branch Locator</title>
+    <title>Club Locator</title>
 </head>
 
 <body>
-    <div class="title">
-        <h1>Bee Branch Locator</h1>
+
+    <div class="main-div">
+
+        <h1>Club Locator</h1>
+
+        <div class="content-div">
+
+            <div class="controls-div">
+                <h2>FIND CLUBS NEARBY</h2>
+
+                <div class="location-input-div">
+                    <input type="text" placeholder="Starting Location">
+                    <button class="location-btn" type="submit"><i class="fa fa-location-arrow"></i></button>
+                </div>
+                <div class="search-radius-div">
+                    <div class="dropdown-div">
+                        <p>5 km <i class="fa fa-caret-down"></i></p>
+                        <ul class="dropdown-items-ul">
+                            <li>5 km</li>
+                            <li>10 km</li>
+                            <li>15 km</li>
+                            <li>No limit</li>
+                        </ul>
+                    </div>
+
+                    <p>Distance Radius.</p>
+                </div>
+
+                <button class="locate-btn"><span>Locate nearest branch </span></button>
+                <button class="see-branches-btn"><span>See all branches </span></button>
+            </div>
+
+            <div id="map"></div>
+
+        </div>
     </div>
-
-    <div id="map"></div>
-
 </body>
+
+<footer>
+    <script defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqhFUpKpcgwXzZZWMH6ggZFk4FlA5z2Pw&callback=initMap&libraries=&v=weekly"></script>
+
+    <!-- AIzaSyCqhFUpKpcgwXzZZWMH6ggZFk4FlA5z2Pw -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script> 
+
+    <script type="text/javascript" src="branches.js"></script>
+    <script type="text/javascript" src="index.js"></script>
+  </footer>
 
 </html>

@@ -1,8 +1,11 @@
+
+/*** Geolocation (start) - https://developers.google.com/maps/documentation/javascript/examples/map-geolocation#maps_map_geolocation-javascript ***/
+
 var map, infoWindow;
 function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
     center: { lat: -34.397, lng: 150.644 },
-    zoom: 6,
+    zoom: 15,
   });
   infoWindow = new google.maps.InfoWindow();
 
@@ -17,8 +20,12 @@ function initMap() {
 
         infoWindow.setPosition(pos);
         infoWindow.setContent('Location found.');
-        infoWindow.open(map);
+        // infoWindow.open(map);
         map.setCenter(pos);
+
+        branches.forEach(function (branch) {
+          markStore(branch, map);
+        });
       },
       function () {
         handleLocationError(true, infoWindow, map.getCenter());
@@ -39,3 +46,39 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
   );
   infoWindow.open(map);
 }
+
+/*** Geolocation (end) ***/
+
+/*** Simple Store Locator (start) https://simplestepscode.com/store-locator-api-tutorial/#step4 ***/
+function markStore(branchInfo, map) {
+  // Create a marker and set its position.
+  var marker = new google.maps.Marker({
+    position: branchInfo.location,
+    map: map,
+    title: branchInfo.name,
+  });
+
+  // show store info when marker is clicked
+  marker.addListener('click', function () {
+    showStoreInfo(branchInfo);
+  });
+}
+
+
+/*** Simple Store Locator (end) ***/
+
+
+
+// UI Interactions *****************
+
+$(window).click(function( event ) {
+
+  if ( $(".dropdown-items-ul").hasClass("show-dropdown") ) {
+    $(".dropdown-items-ul").toggleClass("show-dropdown");
+
+  } else if ( $(event.target).parent().is( ".dropdown-div" )){
+    $(".dropdown-items-ul").toggleClass("show-dropdown");
+
+  }
+});
+
