@@ -1,16 +1,53 @@
+/* Rsoureces
+    - Overview: https://developers.google.com/maps/documentation/javascript/overview#maps_map_simple-javascript
+    - Geolocation: https://developers.google.com/maps/documentation/javascript/examples/map-geolocation#maps_map_geolocation-javascript
+    - Simple Store Locator: https://simplestepscode.com/store-locator-api-tutorial/#step4
+    - Places Library: https://developers.google.com/maps/documentation/javascript/places
+    - Get my current address using javascript: https://stackoverflow.com/questions/14580715/get-my-current-address-using-javascript
+    - Reverse Geocoding: https://developers.google.com/maps/documentation/javascript/examples/geocoding-reverse
+    - 
+*/
 
-/*** Geolocation (start) - https://developers.google.com/maps/documentation/javascript/examples/map-geolocation#maps_map_geolocation-javascript ***/
+$(window).click(function (event) {
+  // anywhere on screen is clicked.
+  if (
+    !$(event.target).parent().is('.dropdown-div') &&
+    $('.dropdown-items-ul').hasClass('show-dropdown')
+  ) {
+    // hide dropdown if anywhere on screen is clicked (except dropdown itself).
+    $('.dropdown-items-ul').toggleClass('show-dropdown');
+  }
+});
+
+function toggleDropdown() {
+  // show/hide dropdown when dropdown-div is clicked (called in HTML).
+  $('.dropdown-items-ul').toggleClass('show-dropdown');
+}
+
+// Handling Map Interactions ***************************************
 
 var map, infoWindow;
+
 function initMap() {
-  map = new google.maps.Map(document.getElementById('map'), {
-    center: { lat: -34.397, lng: 150.644 },
-    zoom: 15,
-  });
+  // zoom levels: 1 (World), 5 (Landmass/continent), 10 (City), 15 (Streets), 20 (Buildings).
+
+  var egypt = new google.maps.LatLng(26.8206, 30.8025);
   infoWindow = new google.maps.InfoWindow();
 
-  // Try HTML5 geolocation.
+  // initializing a map with given coordinates.
+  map = new google.maps.Map(document.getElementById('map'), {
+    center: egypt,
+    zoom: 6,
+  });
+
+  markBranches();
+}
+
+function getCurrentLocation() {
+  // called once location-btn is clicked (sets Map to current location).
+
   if (navigator.geolocation) {
+    // Browser supports geolocatin (get current location).
     navigator.geolocation.getCurrentPosition(
       function (position) {
         var pos = {
@@ -19,20 +56,19 @@ function initMap() {
         };
 
         infoWindow.setPosition(pos);
-        infoWindow.setContent('Location found.');
-        // infoWindow.open(map);
+        infoWindow.setContent('You are here.');
+        infoWindow.open(map);
+        map.setZoom(15);
         map.setCenter(pos);
 
-        branches.forEach(function (branch) {
-          markStore(branch, map);
-        });
+        getCurrentAddress(map, infoWindow, pos);
       },
       function () {
         handleLocationError(true, infoWindow, map.getCenter());
       }
     );
   } else {
-    // Browser doesn't support Geolocation
+    // Browser doesn't support Geolocation.
     handleLocationError(false, infoWindow, map.getCenter());
   }
 }
@@ -41,16 +77,47 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
   infoWindow.setPosition(pos);
   infoWindow.setContent(
     browserHasGeolocation
-      ? 'Error: The Geolocation service failed.'
+      ? // ? 'Error: The Geolocation service failed.'
+        'Error: Unable to get your current location.'
       : "Error: Your browser doesn't support geolocation."
   );
   infoWindow.open(map);
 }
 
-/*** Geolocation (end) ***/
+function getCurrentAddress(map, infowindow, pos) {
+  // get current Address from coordinates (pos) using Geocoder API.
 
-/*** Simple Store Locator (start) https://simplestepscode.com/store-locator-api-tutorial/#step4 ***/
-function markStore(branchInfo, map) {
+  var geocoder = new google.maps.Geocoder();
+
+  if (geocoder) {
+    geocoder.geocode({ latLng: pos }, function (results, status) {
+      if (status == google.maps.GeocoderStatus.OK) {
+        console.log(results[0].formatted_address);
+
+        // create marker at current position.
+        const marker = new google.maps.Marker({
+          position: pos,
+          map: map,
+        });
+
+        // open an infoWindow above marker & set its content to current address.
+        infowindow.setContent(results[0].formatted_address);
+        infowindow.open(map, marker);
+      } else {
+        console.log('Geocoding failed: ' + status);
+      }
+    });
+  }
+}
+
+// create MARKERS & add them to the Map ********************************
+function markBranches() {
+  branches.forEach(function (branch) {
+    createAMarker(branch, map);
+  });
+}
+
+function createAMarker(branchInfo, map) {
   // Create a marker and set its position.
   var marker = new google.maps.Marker({
     position: branchInfo.location,
@@ -60,25 +127,11 @@ function markStore(branchInfo, map) {
 
   // show store info when marker is clicked
   marker.addListener('click', function () {
-    showStoreInfo(branchInfo);
+    (branchInfo);
   });
 }
 
+// to-do: implement this function!!!
+function showStoreInfo(branchInfo){
 
-/*** Simple Store Locator (end) ***/
-
-
-
-// UI Interactions *****************
-
-$(window).click(function( event ) {
-
-  if ( $(".dropdown-items-ul").hasClass("show-dropdown") ) {
-    $(".dropdown-items-ul").toggleClass("show-dropdown");
-
-  } else if ( $(event.target).parent().is( ".dropdown-div" )){
-    $(".dropdown-items-ul").toggleClass("show-dropdown");
-
-  }
-});
-
+}
