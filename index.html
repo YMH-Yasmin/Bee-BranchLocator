@@ -24,25 +24,30 @@
                 <h2>FIND CLUBS NEARBY</h2>
 
                 <div class="location-input-div">
-                    <input type="text" placeholder="Starting Location">
-                    <button class="location-btn" type="submit" onclick="getCurrentLocation()"><i class="fa fa-location-arrow"></i></button>
+                    <input class="location-input" type="text" placeholder="Starting Location">
+                    <button class="location-btn" type="submit" onclick="getCurrentLocation()"><i
+                            class="fa fa-location-arrow"></i></button>
                 </div>
                 <div class="search-radius-div">
-                    <div class="dropdown-div" onclick="toggleDropdown()">
-                        <p>5 km <i class="fa fa-caret-down"></i></p>
+                    <div class="dropdown-div">
+                        <p class="selected-value" onclick="toggleDropdown()">5 km <i class="fa fa-caret-down"></i></p>
                         <ul class="dropdown-items-ul">
-                            <li>5 km</li>
-                            <li>10 km</li>
-                            <li>15 km</li>
-                            <li>No limit</li>
+                            <li id="5 km">5 km</li>
+                            <li id="10 km">10 km</li>
+                            <li id="15 km">15 km</li>
+                            <li id="No limit">No limit</li>
                         </ul>
                     </div>
 
                     <p>Distance Radius.</p>
                 </div>
 
-                <button class="locate-btn"><span>Locate nearest branch </span></button>
-                <button class="see-branches-btn"><span>See all branches </span></button>
+                <button class="locate-btn" onclick="locateNearestBranch()"><span>Locate nearest branch </span></button>
+                <button class="see-branches-btn" onclick="showAllBranches()"><span>See all branches </span></button>
+
+                <div class="branches-details-div">
+
+                </div>
             </div>
 
             <div id="map"></div>

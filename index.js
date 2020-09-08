@@ -9,19 +9,24 @@
 */
 
 $(window).click(function (event) {
-  // anywhere on screen is clicked.
+  // anywhere on screen is clicked (except dropdown itself).
   if (
-    !$(event.target).parent().is('.dropdown-div') &&
-    $('.dropdown-items-ul').hasClass('show-dropdown')
+    !$(event.target).is('.selected-value') &&
+    $('.dropdown-items-ul').css('display') == 'block'
   ) {
     // hide dropdown if anywhere on screen is clicked (except dropdown itself).
-    $('.dropdown-items-ul').toggleClass('show-dropdown');
+    $('.dropdown-items-ul').slideToggle('show-dropdown');
+  }
+
+  // if one of dropdown items is clicked, set is as the selected item.
+  if ($(event.target).parent().is('.dropdown-items-ul')) {
+    $('.selected-value').text(event.target.id);
   }
 });
 
 function toggleDropdown() {
   // show/hide dropdown when dropdown-div is clicked (called in HTML).
-  $('.dropdown-items-ul').toggleClass('show-dropdown');
+  $('.dropdown-items-ul').slideToggle('show-dropdown');
 }
 
 // Handling Map Interactions ***************************************
@@ -104,6 +109,12 @@ function getCurrentAddress(map, infowindow, pos) {
         infowindow.setContent(results[0].formatted_address);
         infowindow.open(map, marker);
       } else {
+        $('.location-input').css('font-size', '12px');
+        $('.location-input').attr(
+          'placeholder',
+          "Couldn't get current addres due to Billing."
+        );
+
         console.log('Geocoding failed: ' + status);
       }
     });
@@ -127,11 +138,45 @@ function createAMarker(branchInfo, map) {
 
   // show store info when marker is clicked
   marker.addListener('click', function () {
-    (branchInfo);
+    branchInfo;
   });
 }
 
 // to-do: implement this function!!!
-function showStoreInfo(branchInfo){
+function showStoreInfo(branchInfo) {}
 
+// show Branch Details ********************************
+
+function showBranches(branches) {
+  let i = 1;
+  for (branch of branches) {
+    $('.branches-details-div').append(`
+    <div class="branch-details-div">
+      <a class="address-title">${branch.name}</a>
+      <a class="opening-hours">${branch.hours}</a>
+      <a class="address"><i class="fas fa-directions"></i>${branch.address}</a>
+      <a class="phone"><i class="fa fas-phone-alt"></i>${branch.number}</a>
+    </div>`);
+
+    if (i < branches.length) {
+      $('.branches-details-div').append('<hr>');
+    }
+    i++;
+  }
+}
+
+function showAllBranches() {
+  if ($('.branches-details-div').css('display') == 'none') {
+    showBranches(branches);
+    $('.branches-details-div').css('display', 'flex');
+  }
+}
+
+// todo: calculate nearest branches using current location & branch locations!
+function locateNearestBranch() {
+  $('.branches-details-div').css('display', 'none');
+  $('.branches-details-div').html('');
+
+  // change to display nearest branches only!
+  showBranches(branches);
 }

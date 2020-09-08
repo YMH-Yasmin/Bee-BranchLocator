@@ -30,6 +30,24 @@ h1 {
   overflow-y: auto;
 }
 
+::-webkit-scrollbar {
+  width: 10px;
+}
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
 #map {
   height: 70vh;
   width: 50vw;
@@ -50,7 +68,6 @@ h1 {
   display: flex;
   margin: 10px 0;
   height: 45px;
-
 }
 
 .location-input-div input {
@@ -123,19 +140,19 @@ h1 {
 }
 
 .dropdown-items-ul {
-  display: none;
-  list-style-type: none;
+  z-index: 1;
+  margin: 0;
   padding: 0;
+  border-radius: 8px;
+  display: none;
+  position: relative;
+  list-style-type: none;
+  background-color: #555555;
+  border: 2px solid black;
 }
 
 .show-dropdown {
-  margin: 0;
-  border-radius: 8px;
   display: block;
-  position: relative;
-  z-index: 1;
-  background-color: #555555;
-  border: 2px solid black;
 }
 
 .dropdown-items-ul li {
@@ -150,3 +167,45 @@ h1 {
 .search-radius-div p {
   margin-left: 15px;
 }
+
+/* Styling the BRANCHES LIST */
+
+.branches-details-div {
+  width: 300px;
+  height: auto;
+  margin: 10px 0;
+  border-radius: 8px;
+  display: none;
+  flex-direction: column;
+  background-color: yellow;
+  color: black;
+}
+
+.branch-details-div {
+  padding: 15px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.branch-details-div:hover{
+  background-color: #e6e600;
+}
+
+.address-title{
+  font-weight: bold;
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+
+.branch-details-div a:not(:first-child) {
+  margin-bottom: 5px;
+}
+
+hr {
+  width: 87%;
+  height: 2px;
+  border: none;
+  background-color: black;
+} 
