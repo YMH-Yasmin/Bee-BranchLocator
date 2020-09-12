@@ -175,7 +175,7 @@ h1 {
   height: auto;
   margin: 10px 0;
   border-radius: 8px;
-  display: none;
+  display: flex;
   flex-direction: column;
   background-color: yellow;
   color: black;
@@ -193,19 +193,25 @@ h1 {
   background-color: #e6e600;
 }
 
-.address-title{
+.branch-title{
   font-weight: bold;
   font-size: 22px;
   margin-bottom: 8px;
 }
 
 .branch-details-div a:not(:first-child) {
-  margin-bottom: 5px;
+  margin: 0 0 10px 5px;
+  font-size: 14px;
+}
+
+.branch-details-div a:last-child {
+  margin-bottom: 0;
 }
 
 hr {
-  width: 87%;
+  width: 90%;
   height: 2px;
+  margin: 0 15px;
   border: none;
   background-color: black;
-} 
+}

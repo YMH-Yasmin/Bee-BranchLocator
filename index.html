@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
         integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
 
+    <script src="https://kit.fontawesome.com/329519d100.js" crossorigin="anonymous"></script>
+
     <title>Club Locator</title>
 </head>
 
@@ -24,11 +26,11 @@
                 <h2>FIND CLUBS NEARBY</h2>
 
                 <div class="location-input-div">
-                    <input class="location-input" type="text" placeholder="Starting Location">
-                    <button class="location-btn" type="submit" onclick="getCurrentLocation()"><i
+                    <input id="location-input" class="location-input" type="text" placeholder="Starting Location" onChange="triggerPlacesAutoComplete()">
+                    <button class="location-btn" title="Get my current location" type="submit" onclick="getCurrentLocation()"><i
                             class="fa fa-location-arrow"></i></button>
                 </div>
-                <div class="search-radius-div">
+                <!-- <div class="search-radius-div">
                     <div class="dropdown-div">
                         <p class="selected-value" onclick="toggleDropdown()">5 km <i class="fa fa-caret-down"></i></p>
                         <ul class="dropdown-items-ul">
@@ -40,9 +42,10 @@
                     </div>
 
                     <p>Distance Radius.</p>
-                </div>
+                </div> -->
 
-                <button class="locate-btn" onclick="locateNearestBranch()"><span>Locate nearest branch </span></button>
+                <button class="locate-btn" onclick="locateNearestBranch()"><span>Locate
+                        nearest branch </span></button>
                 <button class="see-branches-btn" onclick="showAllBranches()"><span>See all branches </span></button>
 
                 <div class="branches-details-div">
@@ -58,7 +61,7 @@
 
 <footer>
     <script defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqhFUpKpcgwXzZZWMH6ggZFk4FlA5z2Pw&callback=initMap&libraries=&v=weekly"></script>
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqhFUpKpcgwXzZZWMH6ggZFk4FlA5z2Pw&callback=initMap&libraries=&v=weekly&libraries=places"></script>
 
     <!-- AIzaSyCqhFUpKpcgwXzZZWMH6ggZFk4FlA5z2Pw -->
 
