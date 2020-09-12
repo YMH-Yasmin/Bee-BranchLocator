@@ -5,7 +5,8 @@
     - Places Library: https://developers.google.com/maps/documentation/javascript/places
     - Get my current address using javascript: https://stackoverflow.com/questions/14580715/get-my-current-address-using-javascript
     - Reverse Geocoding: https://developers.google.com/maps/documentation/javascript/examples/geocoding-reverse
-    - 
+    - Calculate distances on a map with the Maps JavaScript API : https://cloud.google.com/blog/products/maps-platform/how-calculate-distances-map-maps-javascript-api
+    
 */
 
 $(window).click(function (event) {
@@ -242,13 +243,24 @@ function showAllBranches() {
 // Create Branch Details HTML ------------------------------------------------------
 
 function showBranchDetail(branch) {
-  $('.branches-details-div').append(`
+  if (branch.distance != '') {
+    $('.branches-details-div').append(`
+    <div class="branch-details-div">
+      <a class="branch-title">${branch.name}</a>
+      <a class="opening-hours">${branch.hours}</a>
+      <a class="distance">${Math.round(branch.distance * 10) / 10} km away from you</a>
+      <a class="address"><i class="fa fa-directions"></i> ${branch.address}</a>
+      <a class="phone"><i class="fa fa-phone-alt"></i> ${branch.number}</a>
+    </div>`);
+  } else {
+    $('.branches-details-div').append(`
     <div class="branch-details-div">
       <a class="branch-title">${branch.name}</a>
       <a class="opening-hours">${branch.hours}</a>
       <a class="address"><i class="fa fa-directions"></i> ${branch.address}</a>
       <a class="phone"><i class="fa fa-phone-alt"></i> ${branch.number}</a>
     </div>`);
+  }
 }
 
 // Google Place Autocomplete (NOT WORKING due to Billing) ------------------------------------------------------

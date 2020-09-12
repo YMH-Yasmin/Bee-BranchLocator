@@ -168,7 +168,7 @@ h1 {
   margin-left: 15px;
 }
 
-/* Styling the BRANCHES LIST */
+/* Styling the BRANCHES LIST ------------------------------- */
 
 .branches-details-div {
   width: 300px;
@@ -214,4 +214,20 @@ hr {
   margin: 0 15px;
   border: none;
   background-color: black;
+}
+
+
+@media only screen and (max-width: 600px) {
+  h1 {
+    margin: 2vh 0;
+  }
+
+  .controls-div {
+    margin-bottom: 0;
+  }
+
+  #map {
+    height: 70vh;
+    width: 90vw;
+  }
 }
