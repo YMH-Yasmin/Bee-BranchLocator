@@ -263,9 +263,10 @@ function showBranchDetail(branch) {
   }
 }
 
-// Google Place Autocomplete (NOT WORKING due to Billing) ------------------------------------------------------
+// Google Place API (NOT WORKING due to Billing) ------------------------------------------------------
 
 function triggerPlacesAutoComplete() {
+  // Autocomplete Places suggestion in serach input.
   const placeAutoCompleteInput = document.getElementById('location-input');
   const searchBox = new google.maps.places.SearchBox(placeAutoCompleteInput);
 
