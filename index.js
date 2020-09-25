@@ -9,27 +9,6 @@
     
 */
 
-$(window).click(function (event) {
-  // anywhere on screen is clicked (except dropdown itself).
-  if (
-    !$(event.target).is('.selected-value') &&
-    $('.dropdown-items-ul').css('display') == 'block'
-  ) {
-    // hide dropdown if anywhere on screen is clicked (except dropdown itself).
-    $('.dropdown-items-ul').slideToggle('show-dropdown');
-  }
-
-  // if one of dropdown items is clicked, set is as the selected item.
-  if ($(event.target).parent().is('.dropdown-items-ul')) {
-    $('.selected-value').text(event.target.id);
-  }
-});
-
-function toggleDropdown() {
-  // show/hide dropdown when dropdown-div is clicked (called in HTML).
-  $('.dropdown-items-ul').slideToggle('show-dropdown');
-}
-
 /* map: for initiating a google map.
    infoWindow: display location popup in map.
    currentLocation: current location coordinates;
