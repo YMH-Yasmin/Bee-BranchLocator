@@ -17,11 +17,13 @@
 var map,
   infoWindow,
   currentLocation,
-  nearestBranches = [],
+  nearestOutlets = [],
   service;
 
 // Initiate Google Map (showing Egypt) ************************************
 // Zoom Levels: 1 (World), 5 (Landmass/continent), 10 (City), 15 (Streets), 20 (Buildings).
+
+// FUNCTIONALITY 1 - INITIATE MAP. *********************************
 
 function initMap() {
   const egypt = new google.maps.LatLng(26.8206, 30.8025);
@@ -40,20 +42,17 @@ function locateNearestBranch() {
     return;
   }
 
-  // Update Distances in Outlet Info.
   setOutletDistance(currentLocation, branches);
 
   getNearestBranches(branches);
 
-  addOutletMarkers(nearestBranches);
+  addOutletMarkers(nearestOutlets);
 
-  // let nearestBranch = getNearestBranch(branches);
-
-  // clearBranchesDetailsDiv();
-  // showBranchDetail(nearestBranch);
+  showOutletCards(nearestOutlets);
 
   // drawStraightLine(currentLocation, nearestBranch.coordinates);
 }
+// END OF FUNCTIONALITY 1 ************************************************
 
 // FUNCTIONALITY 2 - GET CURRENT LOCATION. *********************************
 function getCurrentLocation() {
@@ -101,9 +100,9 @@ function handleLocationError(
 // END OF FUNCTIONALITY 2 ************************************************
 
 // FUNCATIONALITY 3&4 - UPDATE OUTLET DISTANCES ****************************
-function setOutletDistance(currentLoc, branchesJSON) {
-  for (branch of branchesJSON) {
-    branch.distance = haversine_distance(currentLoc, branch.coordinates);
+function setOutletDistance(currentLoc, outletsJSON) {
+  for (outlet of outletsJSON) {
+    outlet.distance = haversine_distance(currentLoc, outlet.coordinates);
   }
 }
 
@@ -135,43 +134,54 @@ function haversine_distance(mk1, mk2) {
 
 function getNearestBranches(branches) {
   // .slice(0) to pass array by value, leaving branches unaltered.
-  let tempBranches = branches.slice(0);
+  let tempOutlets = branches.slice(0);
 
-  let d = tempBranches[0].distance;
-  let closestBranch;
+  let d = tempOutlets[0].distance;
+  let closestOutlet;
 
-  nearestBranches = [];
+  nearestOutlets = [];
 
   for (let i = 0; i < 5; i++) {
-    for (branch of tempBranches) {
-      if (branch.distance <= d) {
-        closestBranch = branch;
+    for (outlet of tempOutlets) {
+      if (outlet.distance <= d) {
+        closestOutlet = outlet;
       }
     }
-    tempBranches.splice(tempBranches.indexOf(closestBranch), 1);
-    nearestBranches.push(closestBranch);
-    d = tempBranches[0].distance;
+    tempOutlets.splice(tempOutlets.indexOf(closestOutlet), 1);
+    nearestOutlets.push(closestOutlet);
+    d = tempOutlets[0].distance;
   }
-  console.log(nearestBranches);
 }
 
-function addOutletMarkers(nearestBranchesToMark) {
-  nearestBranchesToMark.forEach(function (branch) {
-    createAMarker(branch);
+function addOutletMarkers(outletsToMark) {
+  outletsToMark.forEach(function (outlet) {
+    createAMarker(outlet);
   });
 }
 
-function createAMarker(branchInfo) {
+function createAMarker(outlet) {
   // Create a marker and set its position.
   var marker = new google.maps.Marker({
-    position: branchInfo.coordinates,
     map: map,
-    title: branchInfo.name,
+    position: outlet.coordinates,
+    clickable: true,
+    title: outlet.name,
+  });
+
+  var infoWindowTextForMarker = `<div>
+       <h3>${outlet.name}</h3>
+       <p>${Math.round(outlet.distance * 10) / 10} km away from you</p>
+       <a href="${outlet.directions}">Directions</a>
+       </div>`;
+
+  marker.info = new google.maps.InfoWindow({
+    content: infoWindowTextForMarker,
   });
 
   // show store info when marker is clicked
   marker.addListener('click', function () {
-    branchInfo;
+    // outletInfo;
+    marker.info.open(map, marker);
     // infowindow.setContent(results[0].formatted_address);
     // infowindow.open(map, marker);
   });
@@ -179,68 +189,57 @@ function createAMarker(branchInfo) {
 
 // END OF FUNCTIONALITY 5 ************************************************
 
-
 // to-do: implement this function!!!
 function showStoreInfo(branchInfo) {}
 
-// Get Nearest Branch -------------------------------------------------------------
-function getNearestBranch(branches) {
-  let nearestBranch;
-  let i = branches[0].distance;
+// FUNCTIONALITY 7 - DISPLAY NEAREST OUTLETS CARDS . ******
 
-  for (branch of branches) {
-    if (branch.distance <= i) {
-      nearestBranch = branch;
-    }
-  }
-  return nearestBranch;
-}
-
-// Clear Branches Details Div -----------------------------------------------------
-function clearBranchesDetailsDiv() {
-  $('.branches-details-div').html('');
-}
-
-// Show Branches Details Div ------------------------------------------------------
-
-function showAllBranches() {
-  clearBranchesDetailsDiv();
+function showOutletCards(outletsToShow) {
+  clearOutletCardsDiv();
 
   let i = 1;
 
-  for (branch of branches) {
-    showBranchDetail(branch);
-    if (i < branches.length) {
+  for (outlet of outletsToShow) {
+    showOutletDetail(outlet);
+    if (i < outlet.length) {
       $('.branches-details-div').append('<hr>');
     }
     i++;
   }
 }
 
-// Create Branch Details HTML ------------------------------------------------------
+function clearOutletCardsDiv() {
+  $('.branches-details-div').html('');
+}
 
-function showBranchDetail(branch) {
-  if (branch.distance != '') {
+function showOutletDetail(outlet) {
+  if (outlet.distance != '') {
     $('.branches-details-div').append(`
     <div class="branch-details-div">
-      <a class="branch-title">${branch.name}</a>
-      <a class="opening-hours">${branch.hours}</a>
+      <a class="branch-title">${outlet.name}</a>
+      <a class="opening-hours">${outlet.hours}</a>
       <a class="distance">${
-        Math.round(branch.distance * 10) / 10
+        Math.round(outlet.distance * 10) / 10
       } km away from you</a>
-      <a class="address"><i class="fa fa-directions"></i> ${branch.address}</a>
-      <a class="phone"><i class="fa fa-phone-alt"></i> ${branch.number}</a>
+      <a href="${
+        outlet.directions
+      }" class="address"><i class="fa fa-directions"></i> ${outlet.address}</a>
+      <a href="tel:${
+        outlet.number
+      }" class="phone"><i class="fa fa-phone-alt"></i> ${outlet.number}</a>
     </div>`);
   } else {
     $('.branches-details-div').append(`
     <div class="branch-details-div">
-      <a class="branch-title">${branch.name}</a>
-      <a class="opening-hours">${branch.hours}</a>
-      <a class="address"><i class="fa fa-directions"></i> ${branch.address}</a>
-      <a class="phone"><i class="fa fa-phone-alt"></i> ${branch.number}</a>
+      <a class="branch-title">${outlet.name}</a>
+      <a class="opening-hours">${outlet.hours}</a>
+      <a href="${outlet.directions}" class="address"><i class="fa fa-directions"></i> ${outlet.address}</a>
+      <a href="tel:${outlet.number}" class="phone"><i class="fa fa-phone-alt"></i> ${outlet.number}</a>
     </div>`);
   }
 }
+
+// END OF FUNCTIONALITY 7 ************************************************
 
 // Draw a straight line between currentLocation & destination -----------------------------------
 
