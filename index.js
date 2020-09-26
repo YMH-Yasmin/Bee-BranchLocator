@@ -14,7 +14,11 @@
    currentLocation: current location coordinates;
    service: 
 */
-var map, infoWindow, currentLocation, nearestBranches=[], service;
+var map,
+  infoWindow,
+  currentLocation,
+  nearestBranches = [],
+  service;
 
 // Initiate Google Map (showing Egypt) ************************************
 // Zoom Levels: 1 (World), 5 (Landmass/continent), 10 (City), 15 (Streets), 20 (Buildings).
@@ -168,42 +172,13 @@ function createAMarker(branchInfo) {
   // show store info when marker is clicked
   marker.addListener('click', function () {
     branchInfo;
+    // infowindow.setContent(results[0].formatted_address);
+    // infowindow.open(map, marker);
   });
 }
 
 // END OF FUNCTIONALITY 5 ************************************************
 
-// function getCurrentAddress(map, infowindow) {    // Google Geocoder API (NOT WORKING due to Billing)
-//   // get current Address from coordinates (currentLocation).
-
-//   var geocoder = new google.maps.Geocoder();
-
-//   if (geocoder) {
-//     geocoder.geocode({ latLng: currentLocation }, function (results, status) {
-//       if (status == google.maps.GeocoderStatus.OK) {
-//         console.log(results[0].formatted_address);
-
-//         // create marker at current location.
-//         const marker = new google.maps.Marker({
-//           position: currentLocation,
-//           map: map,
-//         });
-
-//         // open an infoWindow above marker & set its content to current address.
-//         infowindow.setContent(results[0].formatted_address);
-//         infowindow.open(map, marker);
-//       } else {
-//         $('.location-input').css('font-size', '11px');
-//         $('.location-input').attr(
-//           'placeholder',
-//           'Your current address is displayed on the map.'
-//         );
-
-//         console.log('Geocoding failed: ' + status);
-//       }
-//     });
-//   }
-// }
 
 // to-do: implement this function!!!
 function showStoreInfo(branchInfo) {}
@@ -267,68 +242,6 @@ function showBranchDetail(branch) {
   }
 }
 
-// Google Place API (NOT WORKING due to Billing) ------------------------------------------------------
-
-function triggerPlacesAutoComplete() {
-  // Autocomplete Places suggestion in serach input.
-  const placeAutoCompleteInput = document.getElementById('location-input');
-  const searchBox = new google.maps.places.SearchBox(placeAutoCompleteInput);
-
-  // Bias the SearchBox results towards current map's viewport.
-  map.addListener('bounds_changed', () => {
-    searchBox.setBounds(map.getBounds());
-  });
-
-  let markers = [];
-
-  // Listen for the event fired when the user selects a prediction and retrieve
-  // more details for that place.
-  searchBox.addListener('places_changed', () => {
-    const places = searchBox.getPlaces();
-
-    if (places.length == 0) {
-      return;
-    }
-    // Clear out the old markers.
-    markers.forEach((marker) => {
-      marker.setMap(null);
-    });
-    markers = [];
-    // For each place, get the icon, name and location.
-    const bounds = new google.maps.LatLngBounds();
-    places.forEach((place) => {
-      if (!place.geometry) {
-        console.log('Returned place contains no geometry');
-        return;
-      }
-      const icon = {
-        url: place.icon,
-        size: new google.maps.Size(71, 71),
-        origin: new google.maps.Point(0, 0),
-        anchor: new google.maps.Point(17, 34),
-        scaledSize: new google.maps.Size(25, 25),
-      };
-      // Create a marker for each place.
-      markers.push(
-        new google.maps.Marker({
-          map,
-          icon,
-          title: place.name,
-          position: place.geometry.location,
-        })
-      );
-
-      if (place.geometry.viewport) {
-        // Only geocodes have viewport.
-        bounds.union(place.geometry.viewport);
-      } else {
-        bounds.extend(place.geometry.location);
-      }
-    });
-    map.fitBounds(bounds);
-  });
-}
-
 // Draw a straight line between currentLocation & destination -----------------------------------
 
 function drawStraightLine(currentLocation, destination) {
@@ -337,46 +250,3 @@ function drawStraightLine(currentLocation, destination) {
     map: map,
   });
 }
-
-// function getDirections(currentLocation) {    // Google Directions API (NOT WORKING due to Billing)
-//   if (currentLocation != null) {
-//     let destination = { lat: 30.045612, lng: 31.204183 };
-
-//     let directionsService = new google.maps.DirectionsService();
-//     let directionsRenderer = new google.maps.DirectionsRenderer();
-
-//     directionsRenderer.setMap(map); // Existing map object displays directions
-
-//     // Create route from existing points used for markers
-//     const route = {
-//       origin: currentLocation,
-//       destination: destination,
-//       travelMode: 'DRIVING',
-//     };
-
-//     directionsService.route(route, function (response, status) {
-//       // anonymous function to capture directions
-//       if (status !== 'OK') {
-//         console.log('Directions request failed due to ' + status);
-
-//         drawStraightLine(currentLocation, destination);
-//         return;
-//       } else {
-//         directionsRenderer.setDirections(response); // Add route to the map
-//         var directionsData = response.routes[0].legs[0]; // Get data about the mapped route
-//         if (!directionsData) {
-//           console.log('Directions request failed');
-//           return;
-//         } else {
-//           console.log(
-//             ' Driving distance is ' +
-//               directionsData.distance.text +
-//               ' (' +
-//               directionsData.duration.text +
-//               ').'
-//           );
-//         }
-//       }
-//     });
-//   }
-// }
