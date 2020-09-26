@@ -13,34 +13,50 @@
    infoWindow: display location popup in map.
    currentLocation: current location coordinates;
    service: 
-   pyrmont:
 */
-var map, infoWindow, service, currentLocation, pyrmont;
+var map, infoWindow, currentLocation, nearestBranches=[], service;
 
-// Initiate Google Map --------------------------------------------------
+// Initiate Google Map (showing Egypt) ************************************
+// Zoom Levels: 1 (World), 5 (Landmass/continent), 10 (City), 15 (Streets), 20 (Buildings).
 
 function initMap() {
-  // zoom levels: 1 (World), 5 (Landmass/continent), 10 (City), 15 (Streets), 20 (Buildings).
-
-  var egypt = new google.maps.LatLng(26.8206, 30.8025);
+  const egypt = new google.maps.LatLng(26.8206, 30.8025);
   infoWindow = new google.maps.InfoWindow();
 
-  // initializing a map with given coordinates.
   map = new google.maps.Map(document.getElementById('map'), {
     center: egypt,
     zoom: 6,
   });
-
-  markBranches();
 }
 
-// Google Geolocation API -------------------------------------------------
+function locateNearestBranch() {
+  if (currentLocation == null) {
+    // if we don't have user's location --> get it.
+    getCurrentLocation();
+    return;
+  }
 
+  // Update Distances in Outlet Info.
+  setOutletDistance(currentLocation, branches);
+
+  getNearestBranches(branches);
+
+  addOutletMarkers(nearestBranches);
+
+  // let nearestBranch = getNearestBranch(branches);
+
+  // clearBranchesDetailsDiv();
+  // showBranchDetail(nearestBranch);
+
+  // drawStraightLine(currentLocation, nearestBranch.coordinates);
+}
+
+// FUNCTIONALITY 2 - GET CURRENT LOCATION. *********************************
 function getCurrentLocation() {
-  // called once location-btn is clicked (sets Map to current location).
+  // using Google Geolocation API to get current location.
 
   if (navigator.geolocation) {
-    // Browser supports geolocatin (get current location).
+    // if Browser supports geolocatin --> get current location.
     navigator.geolocation.getCurrentPosition(
       function (position) {
         currentLocation = {
@@ -48,18 +64,11 @@ function getCurrentLocation() {
           lng: position.coords.longitude,
         };
 
-        pyrmont = new google.maps.LatLng(
-          position.coords.latitude,
-          position.coords.longitude
-        );
-
         infoWindow.setPosition(currentLocation);
         infoWindow.setContent('You are here.');
         infoWindow.open(map);
         map.setZoom(15);
         map.setCenter(currentLocation);
-
-        getCurrentAddress(map, infoWindow, currentLocation);
       },
       function () {
         handleLocationError(true, infoWindow, map.getCenter());
@@ -85,50 +94,70 @@ function handleLocationError(
   );
   infoWindow.open(map);
 }
+// END OF FUNCTIONALITY 2 ************************************************
 
-// Google Geocoder API (NOT WORKING due to Billing) -------------------------------------------------
-
-function getCurrentAddress(map, infowindow) {
-  // get current Address from coordinates (currentLocation).
-
-  var geocoder = new google.maps.Geocoder();
-
-  if (geocoder) {
-    geocoder.geocode({ latLng: currentLocation }, function (results, status) {
-      if (status == google.maps.GeocoderStatus.OK) {
-        console.log(results[0].formatted_address);
-
-        // create marker at current location.
-        const marker = new google.maps.Marker({
-          position: currentLocation,
-          map: map,
-        });
-
-        // open an infoWindow above marker & set its content to current address.
-        infowindow.setContent(results[0].formatted_address);
-        infowindow.open(map, marker);
-      } else {
-        $('.location-input').css('font-size', '11px');
-        $('.location-input').attr(
-          'placeholder',
-          'Your current address is displayed on the map.'
-        );
-
-        console.log('Geocoding failed: ' + status);
-      }
-    });
+// FUNCATIONALITY 3&4 - UPDATE OUTLET DISTANCES ****************************
+function setOutletDistance(currentLoc, branchesJSON) {
+  for (branch of branchesJSON) {
+    branch.distance = haversine_distance(currentLoc, branch.coordinates);
   }
 }
 
-// Create MARKERS & add them to the Map --------------------------------------
+function haversine_distance(mk1, mk2) {
+  // Calculate Distance (in km) between two coordinates.
 
-function markBranches() {
-  branches.forEach(function (branch) {
-    createAMarker(branch, map);
+  var R = 6371.071; // Radius of the Earth in kilometers
+  var rlat1 = mk1.lat * (Math.PI / 180); // Convert degrees to radians
+  var rlat2 = mk2.lat * (Math.PI / 180); // Convert degrees to radians
+  var difflat = rlat2 - rlat1; // Radian difference (latitudes)
+  var difflon = (mk2.lng - mk1.lng) * (Math.PI / 180); // Radian difference (longitudes)
+  var d =
+    2 *
+    R *
+    Math.asin(
+      Math.sqrt(
+        Math.sin(difflat / 2) * Math.sin(difflat / 2) +
+          Math.cos(rlat1) *
+            Math.cos(rlat2) *
+            Math.sin(difflon / 2) *
+            Math.sin(difflon / 2)
+      )
+    );
+  return d;
+}
+// END OF FUNCTIONALITY 3&4 ************************************************
+
+// FUNCTIONALITY 5 - GET NEAREST 5 OUTLETS & ADD THEIR LOCATION MARKERS IN MAP. ******
+
+function getNearestBranches(branches) {
+  // .slice(0) to pass array by value, leaving branches unaltered.
+  let tempBranches = branches.slice(0);
+
+  let d = tempBranches[0].distance;
+  let closestBranch;
+
+  nearestBranches = [];
+
+  for (let i = 0; i < 5; i++) {
+    for (branch of tempBranches) {
+      if (branch.distance <= d) {
+        closestBranch = branch;
+      }
+    }
+    tempBranches.splice(tempBranches.indexOf(closestBranch), 1);
+    nearestBranches.push(closestBranch);
+    d = tempBranches[0].distance;
+  }
+  console.log(nearestBranches);
+}
+
+function addOutletMarkers(nearestBranchesToMark) {
+  nearestBranchesToMark.forEach(function (branch) {
+    createAMarker(branch);
   });
 }
 
-function createAMarker(branchInfo, map) {
+function createAMarker(branchInfo) {
   // Create a marker and set its position.
   var marker = new google.maps.Marker({
     position: branchInfo.coordinates,
@@ -142,48 +171,42 @@ function createAMarker(branchInfo, map) {
   });
 }
 
-// to-do: implement this function!!!
-function showStoreInfo(branchInfo) {}
+// END OF FUNCTIONALITY 5 ************************************************
 
-// Locate Nearest Branch ------------------------------------------------------
+// function getCurrentAddress(map, infowindow) {    // Google Geocoder API (NOT WORKING due to Billing)
+//   // get current Address from coordinates (currentLocation).
 
-function locateNearestBranch() {
-  if (currentLocation == null) {
-    // get current location, if we don't have it.
-    getCurrentLocation();
-    return;
-  }
+//   var geocoder = new google.maps.Geocoder();
 
-  // set distances between current lcoation & branches.
-  setBranchesDistance(currentLocation, branches);
+//   if (geocoder) {
+//     geocoder.geocode({ latLng: currentLocation }, function (results, status) {
+//       if (status == google.maps.GeocoderStatus.OK) {
+//         console.log(results[0].formatted_address);
 
-  let nearestBranch = getNearestBranch(branches);
+//         // create marker at current location.
+//         const marker = new google.maps.Marker({
+//           position: currentLocation,
+//           map: map,
+//         });
 
-  clearBranchesDetailsDiv();
-  showBranchDetail(nearestBranch);
+//         // open an infoWindow above marker & set its content to current address.
+//         infowindow.setContent(results[0].formatted_address);
+//         infowindow.open(map, marker);
+//       } else {
+//         $('.location-input').css('font-size', '11px');
+//         $('.location-input').attr(
+//           'placeholder',
+//           'Your current address is displayed on the map.'
+//         );
 
-  drawStraightLine(currentLocation, nearestBranch.coordinates);
-
-  // var pyrmont = new google.maps.LatLng(
-  //   currentLocation.lat,
-  //   currentLocation.lan
-  // );
-  // var request = {
-  //   location: pyrmont,
-  //   radius: '5000',
-  //   type: ['restaurant'],
-  // };
-  // service = new google.maps.places.PlacesService(map);
-  // service.nearbySearch(request, callback);
-}
-
-// function callback(results, status) {
-//   if (status == google.maps.places.PlacesServiceStatus.OK) {
-//     for (var i = 0; i < results.length; i++) {
-//       createMarker(results[i]);
-//     }
+//         console.log('Geocoding failed: ' + status);
+//       }
+//     });
 //   }
 // }
+
+// to-do: implement this function!!!
+function showStoreInfo(branchInfo) {}
 
 // Get Nearest Branch -------------------------------------------------------------
 function getNearestBranch(branches) {
@@ -227,7 +250,9 @@ function showBranchDetail(branch) {
     <div class="branch-details-div">
       <a class="branch-title">${branch.name}</a>
       <a class="opening-hours">${branch.hours}</a>
-      <a class="distance">${Math.round(branch.distance * 10) / 10} km away from you</a>
+      <a class="distance">${
+        Math.round(branch.distance * 10) / 10
+      } km away from you</a>
       <a class="address"><i class="fa fa-directions"></i> ${branch.address}</a>
       <a class="phone"><i class="fa fa-phone-alt"></i> ${branch.number}</a>
     </div>`);
@@ -304,36 +329,6 @@ function triggerPlacesAutoComplete() {
   });
 }
 
-// Get Distance (in km) between two coordinates -----------------------------------
-
-function haversine_distance(mk1, mk2) {
-  var R = 6371.071; // Radius of the Earth in kilometers
-  var rlat1 = mk1.lat * (Math.PI / 180); // Convert degrees to radians
-  var rlat2 = mk2.lat * (Math.PI / 180); // Convert degrees to radians
-  var difflat = rlat2 - rlat1; // Radian difference (latitudes)
-  var difflon = (mk2.lng - mk1.lng) * (Math.PI / 180); // Radian difference (longitudes)
-
-  var d =
-    2 *
-    R *
-    Math.asin(
-      Math.sqrt(
-        Math.sin(difflat / 2) * Math.sin(difflat / 2) +
-          Math.cos(rlat1) *
-            Math.cos(rlat2) *
-            Math.sin(difflon / 2) *
-            Math.sin(difflon / 2)
-      )
-    );
-  return d;
-}
-
-function setBranchesDistance(currentLoc, branchesJSON) {
-  for (branch of branchesJSON) {
-    branch.distance = haversine_distance(currentLoc, branch.coordinates);
-  }
-}
-
 // Draw a straight line between currentLocation & destination -----------------------------------
 
 function drawStraightLine(currentLocation, destination) {
@@ -343,47 +338,45 @@ function drawStraightLine(currentLocation, destination) {
   });
 }
 
-// Google Directions API (NOT WORKING due to Billing) ------------------------------------------------------
+// function getDirections(currentLocation) {    // Google Directions API (NOT WORKING due to Billing)
+//   if (currentLocation != null) {
+//     let destination = { lat: 30.045612, lng: 31.204183 };
 
-function getDirections(currentLocation) {
-  if (currentLocation != null) {
-    let destination = { lat: 30.045612, lng: 31.204183 };
+//     let directionsService = new google.maps.DirectionsService();
+//     let directionsRenderer = new google.maps.DirectionsRenderer();
 
-    let directionsService = new google.maps.DirectionsService();
-    let directionsRenderer = new google.maps.DirectionsRenderer();
+//     directionsRenderer.setMap(map); // Existing map object displays directions
 
-    directionsRenderer.setMap(map); // Existing map object displays directions
+//     // Create route from existing points used for markers
+//     const route = {
+//       origin: currentLocation,
+//       destination: destination,
+//       travelMode: 'DRIVING',
+//     };
 
-    // Create route from existing points used for markers
-    const route = {
-      origin: currentLocation,
-      destination: destination,
-      travelMode: 'DRIVING',
-    };
+//     directionsService.route(route, function (response, status) {
+//       // anonymous function to capture directions
+//       if (status !== 'OK') {
+//         console.log('Directions request failed due to ' + status);
 
-    directionsService.route(route, function (response, status) {
-      // anonymous function to capture directions
-      if (status !== 'OK') {
-        console.log('Directions request failed due to ' + status);
-
-        drawStraightLine(currentLocation, destination);
-        return;
-      } else {
-        directionsRenderer.setDirections(response); // Add route to the map
-        var directionsData = response.routes[0].legs[0]; // Get data about the mapped route
-        if (!directionsData) {
-          console.log('Directions request failed');
-          return;
-        } else {
-          console.log(
-            ' Driving distance is ' +
-              directionsData.distance.text +
-              ' (' +
-              directionsData.duration.text +
-              ').'
-          );
-        }
-      }
-    });
-  }
-}
+//         drawStraightLine(currentLocation, destination);
+//         return;
+//       } else {
+//         directionsRenderer.setDirections(response); // Add route to the map
+//         var directionsData = response.routes[0].legs[0]; // Get data about the mapped route
+//         if (!directionsData) {
+//           console.log('Directions request failed');
+//           return;
+//         } else {
+//           console.log(
+//             ' Driving distance is ' +
+//               directionsData.distance.text +
+//               ' (' +
+//               directionsData.duration.text +
+//               ').'
+//           );
+//         }
+//       }
+//     });
+//   }
+// }
