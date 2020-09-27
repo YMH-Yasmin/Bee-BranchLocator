@@ -12,7 +12,7 @@ JAVASCRIPT
 1- initiate Google Map.
 2- use Geolocation to get user's location.
 3- calculate distance between user's location & all outlets.
-4- add distance to outlet's information.
-5- add marker's of the five closest outlets (only) in the map.
-6- add outlet information into the marker infoWindow.
-7- display outlet information in cards under the 'locate nearest outlets' button.
+4- add calculated distances to outlets' information.
+5- add markers of the nearest five outlets (only) on the map.
+6- show outlet information (infoWindow) on the map when outlet marker is clicked.
+7- display nearest five outlets info in cards (under 'locate nearest outlets' button).
