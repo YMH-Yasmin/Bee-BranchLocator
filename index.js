@@ -15,7 +15,8 @@
 var map,
   infoWindowUserLocation,
   currentLocation,
-  nearestOutlets = [];
+  nearestOutlets = [],
+  outlets;
 
 // Initiate Google Map (showing Egypt) ************************************
 // Zoom Levels: 1 (World), 5 (Landmass/continent), 10 (City), 15 (Streets), 20 (Buildings).
@@ -32,6 +33,22 @@ function initMap() {
   });
 }
 
+// END OF FUNCTIONALITY 1 *******************************************************************
+
+// FUNCTIONALITY ... - Fetch JSON DATA. *********************************
+
+fetch('./outlets.json')
+  .then(function (resp) {
+    return resp.json();
+  })
+  .then(function (data) {
+    outlets = data;
+  });
+
+// END OF FUNCTIONALITY ... *******************************************************************
+
+// FUNCTIONALITY 2 - GET CURRENT LOCATION. *********************************
+
 function locateNearestBranch() {
   if (currentLocation == null) {
     // if we don't have user's location --> get it.
@@ -41,17 +58,15 @@ function locateNearestBranch() {
 
   infoWindowUserLocation.open(map);
 
-  setOutletDistance(currentLocation, branches);
+  setOutletDistanceJSON(currentLocation, outlets);
 
-  getNearestBranches(branches);
+  getNearestBranches(outlets);
 
   addOutletMarkers(nearestOutlets);
 
   showOutletCards(nearestOutlets);
 }
-// END OF FUNCTIONALITY 1 ************************************************
 
-// FUNCTIONALITY 2 - GET CURRENT LOCATION. *********************************
 function getCurrentLocation() {
   // using Google Geolocation API to get current location.
 
@@ -70,9 +85,9 @@ function getCurrentLocation() {
         map.setZoom(15);
         map.setCenter(currentLocation);
 
-        setOutletDistance(currentLocation, branches);
+        setOutletDistanceJSON(currentLocation, outlets);
 
-        getNearestBranches(branches);
+        getNearestBranches(outlets);
 
         addOutletMarkers(nearestOutlets);
 
@@ -104,21 +119,21 @@ function handleLocationError(
 }
 // END OF FUNCTIONALITY 2 *******************************************************************
 
-// FUNCATIONALITY 3&4 - UPDATE OUTLET DISTANCES *********************************************
-function setOutletDistance(currentLoc, outletsJSON) {
+function setOutletDistanceJSON(currentLoc, outletsJSON) {
+
   for (outlet of outletsJSON) {
-    outlet.distance = haversine_distance(currentLoc, outlet.coordinates);
+    outlet.distance = haversine_distanceJSON(currentLoc, outlet.latitude, outlet.longitude);
   }
 }
 
-function haversine_distance(mk1, mk2) {
+function haversine_distanceJSON(mk1, mk2Lat, mk2lng) {
   // Calculate Distance (in km) between two coordinates.
 
   var R = 6371.071; // Radius of the Earth in kilometers
   var rlat1 = mk1.lat * (Math.PI / 180); // Convert degrees to radians
-  var rlat2 = mk2.lat * (Math.PI / 180); // Convert degrees to radians
+  var rlat2 = mk2Lat * (Math.PI / 180); // Convert degrees to radians
   var difflat = rlat2 - rlat1; // Radian difference (latitudes)
-  var difflon = (mk2.lng - mk1.lng) * (Math.PI / 180); // Radian difference (longitudes)
+  var difflon = (mk2lng - mk1.lng) * (Math.PI / 180); // Radian difference (longitudes)
   var d =
     2 *
     R *
@@ -137,9 +152,9 @@ function haversine_distance(mk1, mk2) {
 
 // FUNCTIONALITY 5&6 - GET NEAREST 5 OUTLETS & ADD THEIR LOCATION MARKERS IN MAP. **********
 
-function getNearestBranches(branches) {
+function getNearestBranches(outletsParam) {
   // .slice(0) to pass array by value, leaving branches unaltered.
-  let tempOutlets = branches.slice(0);
+  let tempOutlets = outletsParam.slice(0);
 
   let d = tempOutlets[0].distance;
   let closestOutlet;
@@ -158,37 +173,37 @@ function getNearestBranches(branches) {
   }
 }
 
-function addOutletMarkers(outletsToMark) {
-  outletsToMark.forEach(function (outlet) {
-    createAMarker(outlet);
+function addOutletMarkers(outletsParam) {
+  outletsParam.forEach(function (outletParam) {
+    createAMarker(outletParam);
   });
 }
 
-function createAMarker(outlet) {
+function createAMarker(outletParam) {
   // Create a marker and set its position.
   var marker = new google.maps.Marker({
     map: map,
-    position: outlet.coordinates,
+    position: {lat: outletParam.latitude, lng: outletParam.longitude},
     clickable: true,
-    title: outlet.name,
+    title: outletParam.name,
   });
 
   var infoWindowTextForMarker = `<div class="infoWindow-div">
-       <h3>${outlet.name}</h3>
-       <a>${Math.round(outlet.distance * 10) / 10} km away from you</a>
+       <h3>${outletParam.name}</h3>
+       <a>${Math.round(outletParam.distance * 10) / 10} km away from you</a>
        <a href="${
-         outlet.directions
+        outletParam.directionsurl
        }"><i class="fa fa-directions"></i>Directions</a>
        <a href="tel:${
-         outlet.number
-       }" class="phone"><i class="fa fa-phone-alt"></i>${outlet.number}</a>
+        outletParam.phonenumber
+       }" class="phone"><i class="fa fa-phone-alt"></i>${outletParam.phonenumber}</a>
        </div>`;
 
   marker.info = new google.maps.InfoWindow({
     content: infoWindowTextForMarker,
   });
 
-  // show store info when marker is clicked
+  // show store info when marker is clicked.
   marker.addListener('click', function () {
     marker.info.open(map, marker);
   });
@@ -215,22 +230,47 @@ function clearOutletCardsDiv() {
   $('.branches-details-div').html('');
 }
 
-function showOutletDetail(outlet) {
-  if (outlet.distance != '') {
+function showOutletDetail(outletParam) {
+  if (outletParam.distance != '') {
     $('.branches-details-div').append(`
     <div class="branch-details-div">
-      <a class="branch-title">${outlet.name}</a>
+      <a class="branch-title">${outletParam.name}</a>
       <a class="distance">${
-        Math.round(outlet.distance * 10) / 10
+        Math.round(outletParam.distance * 10) / 10
       } km away from you</a>
       <a href="${
-        outlet.directions
-      }" class="address"><i class="fa fa-directions"></i>${outlet.address}</a>
-      <a href="tel:${
-        outlet.number
-      }" class="phone"><i class="fa fa-phone-alt"></i>${outlet.number}</a>
+        outletParam.directionsurl
+      }" class="address"><i class="fa fa-directions"></i>${outletParam.address}</a>
+    <a href="tel:${
+      outletParam.phonenumber
+    }" class="phone"><i class="fa fa-phone-alt"></i>${outletParam.phonenumber}</a>
     </div>`);
   }
 }
 
 // END OF FUNCTIONALITY 7 ************************************************
+
+// function showOutletDetail(outlet) {
+//   if (outlet.distance != '') {
+//     $('.branches-details-div').append(`
+//     <div class="branch-details-div">
+//       <a class="branch-title">${outlet.name}</a>
+//       <a class="distance">${
+//         Math.round(outlet.distance * 10) / 10
+//       } km away from you</a>
+//       <a href="${
+//         outlet.directions
+//       }" class="address"><i class="fa fa-directions"></i>${
+//       outlet.address
+//     }</a>`);
+
+//     for (phoneNumber of outlet.number) {
+//       $('.branches-details-div').append(
+//         `<a href="tel:${phoneNumber}" class="phone"><i class="fa fa-phone-alt"></i>${phoneNumber}</a>`
+//       );
+//     }
+
+//     $('.branches-details-div').append(`</div>`);
+//     console.log($('.branches-details-div'));
+//   }
+// }
