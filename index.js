@@ -192,13 +192,8 @@ function createAMarker(outletParam) {
        <h3>${outletParam.name}</h3>
        <a>${Math.round(outletParam.distance * 10) / 10} km away from you</a>
        <a href="${
-<<<<<<< HEAD
         outletParam.directionsurl
-       }"><i class="fa fa-directions"></i>Directions</a>
-=======
-         outlet.directions
-       }"><i class="fa fa-directions"></i>${outlet.address}</a>
->>>>>>> a4d3f1a028c6346067247fe99d0f2747733e8a2a
+       }"><i class="fa fa-directions"></i>${outletParam.address}</a>
        <a href="tel:${
         outletParam.phonenumber
        }" class="phone"><i class="fa fa-phone-alt"></i>${outletParam.phonenumber}</a>
