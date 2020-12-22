@@ -1,0 +1,51 @@
+[
+    {
+      "Name": "Heliopolis Sporting Club",
+      "Latitude": "30.088984",
+      "Longitude": "31.317309",
+      "Address": "17 El-Marghany, Heliopolis, Cairo.",
+      "Phone Number": "+20224170061, +201222970758",
+      "Directions URL": "https://goo.gl/maps/oWf2UuBQWqnTj8LQ7"
+    },
+    {
+      "Name": "Gezira Sporting Club",
+      "Latitude": "30.052666",
+      "Longitude": "31.223163",
+      "Address": "15 Saray El Gezirah, Zamalek, Cairo.",
+      "Phone Number": "+20227356000",
+      "Directions URL": "https://goo.gl/maps/XGSG5R9R1noWs3rx6"
+    },
+    {
+      "Name": "El Shams Sporting Club",
+      "Latitude": "30.116214",
+      "Longitude": "31.345354",
+      "Address": "Abd El-Hameed Badawi, El Nozha, Cairo.",
+      "Phone Number": "+20221802460",
+      "Directions URL": "https://goo.gl/maps/GNse7TATK5dBQFYo9"
+    },
+    {
+      "Name": "Al Ahly Club Nasr City",
+      "Latitude": "30.070369",
+      "Longitude": "31.355282",
+      "Address": "Hassan Mamoon, Nasr City, Cairo.",
+      "Phone Number": "+201111970758",
+      "Directions URL": "https://goo.gl/maps/uiTTk5hbX7QAvfyD8"
+    },
+    {
+      "Name": "Shooting Club Dokki",
+      "Latitude": "30.045612",
+      "Longitude": "31.204183",
+      "Address": "Dr Michel Bakhoum, Dokki, Giza.",
+      "Phone Number": "+20233374559",
+      "Directions URL": "https://goo.gl/maps/ZNjLbmKqfUvbXtCD8"
+    },
+    {
+      "Name": "Maadi Club",
+      "Latitude": "29.964057",
+      "Longitude": "31.263111",
+      "Address": "Street 87, Maadi, Cairo.",
+      "Phone Number": "",
+      "Directions URL": "https://goo.gl/maps/2erRTQvPCkCG9w4d6"
+    }
+  ]
+  

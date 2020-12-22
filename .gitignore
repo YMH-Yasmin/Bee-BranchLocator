@@ -2,3 +2,5 @@
 image examples/*
 
 sheets API/*
+
+node/node_modules/*
